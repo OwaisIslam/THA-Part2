@@ -1,5 +1,7 @@
 localStorage.clear();
 
+let correctRow = false;
+
 var apiURL = "https://api.postscript.io/api/v2/subscribers";
 
 const getOptions = {
@@ -46,14 +48,14 @@ $(document).on('click', 'button', function() {
     let input = row.find('input[type="text"]');
     let tag = input.val();
     let subID = "";
-    let wrongRow = true;
 
     fetch(apiURL, getOptions)
         .then(res => res.json())
         .then(function(res) {
             for (let i = 0; i < res.subscribers.length; i++) {
+                console.log("in for");
                 if (res.subscribers[i].phone_number == row.find('.phoneNum').text()) {
-
+                    console.log("in if");
                     // Add the tag to the subscriber
                     res.subscribers[i].tags.push(tag);
 
@@ -76,8 +78,14 @@ $(document).on('click', 'button', function() {
                     fetch(apiURL + "/" + subID, patchOptions)
                         .then(res => res.json())
                         .then(function(res) {
-                            alert("Tag added successfully");
-                            location.reload();
+                            correctRow = true;
+                            console.log("correctRow in fetch: " + correctRow);
+                            if (correctRow) {
+                                alert("Tag added successfully!");
+                            } else {
+                                alert("Tag was not added as corresponding 'Add Tag' button in the row must be clicked!");
+                            }
+                            //location.reload();                          
                         })
                         .catch(err => console.error(err));
 
@@ -86,4 +94,6 @@ $(document).on('click', 'button', function() {
             }
         })
         .catch(err => console.error(err));
+
+        console.log("final correctRow: " + correctRow);
 });
